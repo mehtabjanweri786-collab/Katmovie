@@ -18,6 +18,12 @@ export async function registerRoutes(
         `${TMDB_BASE_URL}/trending/movie/day?api_key=${TMDB_API_KEY}&language=en-US`
       );
       const data = await response.json();
+      
+      // Filter for Hindi language only
+      if (data.results) {
+        data.results = data.results.filter((movie: any) => movie.original_language === 'hi');
+      }
+      
       res.json(data);
     } catch (error) {
       console.error("TMDB Error:", error);
@@ -36,6 +42,12 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Movie not found" });
       }
       const data = await response.json();
+      
+      // Strict check for Hindi language
+      if (data.original_language !== 'hi') {
+        return res.status(404).json({ message: "Hindi dubbed version not available" });
+      }
+      
       res.json(data);
     } catch (error) {
       console.error("TMDB Error:", error);
@@ -48,7 +60,7 @@ export async function registerRoutes(
     const { genreId } = req.params;
     try {
       const response = await fetch(
-        `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=popularity.desc`
+        `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&with_original_language=hi&sort_by=popularity.desc`
       );
       const data = await response.json();
       res.json(data);
