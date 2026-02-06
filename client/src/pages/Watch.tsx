@@ -139,28 +139,13 @@ export default function Watch() {
                 </div>
                 
                 <div className="w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 relative shadow-2xl flex items-center justify-center group">
-                  {/* Fake Player UI */}
-                  <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-20 transition-opacity" style={{ backgroundImage: `url(${backdropUrl})` }} />
-                  
-                  <div className="relative z-10 text-center space-y-4">
-                    <Button size="lg" className="rounded-full w-20 h-20 bg-primary hover:bg-primary/90 hover:scale-105 transition-all shadow-xl shadow-primary/20">
-                      <Play className="w-10 h-10 fill-current ml-2" />
-                    </Button>
-                    <p className="text-sm font-medium text-white/70">Click to Play</p>
-                  </div>
-
-                  {/* Player Controls (Fake) */}
-                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black to-transparent flex items-end px-6 py-4">
-                     <div className="w-full space-y-2">
-                        <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
-                           <div className="w-1/3 h-full bg-primary" />
-                        </div>
-                        <div className="flex justify-between text-xs text-white/50">
-                           <span>00:00</span>
-                           <span>{movie.runtime || '120'}:00</span>
-                        </div>
-                     </div>
-                  </div>
+                  <iframe
+                    src={`https://embed.smashystream.com/playere.php?tmdb=${movie.id}`}
+                    className="absolute inset-0 w-full h-full"
+                    allowFullScreen
+                    frameBorder="0"
+                    scrolling="no"
+                  />
                 </div>
                 
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 text-sm text-yellow-500/80 flex items-start gap-3">
