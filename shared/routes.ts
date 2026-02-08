@@ -20,7 +20,9 @@ export const api = {
       path: '/api/movies/trending',
       responses: {
         200: z.object({
-          results: z.array(z.any())
+          results: z.array(z.any()),
+          page: z.number().optional(),
+          total_pages: z.number().optional()
         })
       }
     },

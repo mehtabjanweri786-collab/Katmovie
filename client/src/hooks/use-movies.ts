@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 
-export function useTrendingMovies() {
+export function useTrendingMovies(page: number = 1) {
   return useQuery({
-    queryKey: [api.movies.trending.path],
+    queryKey: [api.movies.trending.path, page],
     queryFn: async () => {
-      const res = await fetch(api.movies.trending.path);
+      const res = await fetch(`${api.movies.trending.path}?page=${page}`);
       if (!res.ok) throw new Error("Failed to fetch trending movies");
       return api.movies.trending.responses[200].parse(await res.json());
     },

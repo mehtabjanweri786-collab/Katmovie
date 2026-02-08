@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTrendingMovies } from "@/hooks/use-movies";
 import { MovieCard } from "@/components/MovieCard";
 import { Navigation } from "@/components/Navigation";
@@ -5,9 +6,19 @@ import { Footer } from "@/components/Footer";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { Loader2, TrendingUp, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function Home() {
-  const { data, isLoading, error } = useTrendingMovies();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, error } = useTrendingMovies(page);
 
   if (isLoading) {
     return (
@@ -35,6 +46,12 @@ export default function Home() {
 
   const movies = data?.results || [];
   const heroMovie = movies[0]; // Simple hero logic using first trending movie
+  const totalPages = data?.total_pages || 1;
+
+  const handlePageChange = (p: number) => {
+    setPage(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-body">
@@ -67,9 +84,11 @@ export default function Home() {
                   {heroMovie.overview}
                 </p>
                 <div className="flex flex-wrap gap-4 pt-4">
-                  <Button size="lg" className="rounded-full px-8 text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
-                    Watch Now
-                  </Button>
+                  <Link href={`/watch/${heroMovie.id}`}>
+                    <Button size="lg" className="rounded-full px-8 text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
+                      Watch Now
+                    </Button>
+                  </Link>
                   <Button size="lg" variant="outline" className="rounded-full px-8 bg-white/5 border-white/10 hover:bg-white/10 hover:text-white backdrop-blur-md">
                     More Info
                   </Button>
@@ -108,26 +127,38 @@ export default function Home() {
               />
             ))}
           </div>
-        </section>
 
-        {/* Categories Preview (Mock) */}
-        <section className="container mx-auto px-4 py-12 border-t border-white/5">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-display font-bold text-white">Action Movies</h2>
-            <Button variant="link" className="text-muted-foreground">See all</Button>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8">
-            {movies.slice(5, 11).map((movie: any) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id}
-                title={movie.title}
-                posterPath={movie.poster_path}
-                voteAverage={movie.vote_average}
-                releaseDate={movie.release_date}
-                isHindi={false}
-              />
-            ))}
+          {/* Pagination Controls */}
+          <div className="mt-16 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => page > 1 && handlePageChange(page - 1)}
+                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p} className="hidden sm:inline-block">
+                    <PaginationLink 
+                      onClick={() => handlePageChange(p)}
+                      isActive={page === p}
+                      className="cursor-pointer"
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => page < totalPages && handlePageChange(page + 1)}
+                    className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </section>
       </main>
