@@ -14,17 +14,25 @@ export async function registerRoutes(
   // Proxy route for Trending Movies
   app.get(api.movies.trending.path, async (req, res) => {
     try {
-      const response = await fetch(
-        `${TMDB_BASE_URL}/trending/movie/day?api_key=${TMDB_API_KEY}&language=en-US`
+      // Fetch multiple pages to ensure we get enough Hindi movies
+      const pages = [1, 2, 3];
+      const allResults = await Promise.all(
+        pages.map(async (page) => {
+          const response = await fetch(
+            `${TMDB_BASE_URL}/trending/movie/day?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
+          );
+          const data = await response.json();
+          return data.results || [];
+        })
       );
-      const data = await response.json();
+
+      let results = allResults.flat();
       
       // Filter for Hindi language only
-      if (data.results) {
-        data.results = data.results.filter((movie: any) => movie.original_language === 'hi');
-      }
+      results = results.filter((movie: any) => movie.original_language === 'hi');
       
-      res.json(data);
+      // Limit to 30 as requested
+      res.json({ results: results.slice(0, 30) });
     } catch (error) {
       console.error("TMDB Error:", error);
       res.status(500).json({ message: "Failed to fetch from TMDB" });
