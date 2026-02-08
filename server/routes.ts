@@ -11,15 +11,21 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  // Proxy route for Trending Movies
+  // Proxy route for Trending Movies with Pagination
   app.get(api.movies.trending.path, async (req, res) => {
     try {
-      // Fetch multiple pages to ensure we get enough Hindi movies
-      const pages = [1, 2, 3];
+      const page = parseInt(req.query.page as string) || 1;
+      // We need to fetch multiple TMDB pages because we filter for Hindi ('hi')
+      // TMDB returns 20 results per page. To get roughly 20-30 Hindi results, we might need multiple pages.
+      const tmdbPagesPerSitePage = 5;
+      const startTmdbPage = (page - 1) * tmdbPagesPerSitePage + 1;
+      
+      const tmdbPages = Array.from({ length: tmdbPagesPerSitePage }, (_, i) => startTmdbPage + i);
+      
       const allResults = await Promise.all(
-        pages.map(async (page) => {
+        tmdbPages.map(async (p) => {
           const response = await fetch(
-            `${TMDB_BASE_URL}/trending/movie/day?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
+            `${TMDB_BASE_URL}/trending/movie/day?api_key=${TMDB_API_KEY}&language=en-US&page=${p}`
           );
           const data = await response.json();
           return data.results || [];
@@ -31,8 +37,12 @@ export async function registerRoutes(
       // Filter for Hindi language only
       results = results.filter((movie: any) => movie.original_language === 'hi');
       
-      // Limit to 30 as requested
-      res.json({ results: results.slice(0, 30) });
+      // Return 30 per page as requested
+      res.json({ 
+        results: results.slice(0, 30),
+        page,
+        total_pages: 15 // Capped as requested
+      });
     } catch (error) {
       console.error("TMDB Error:", error);
       res.status(500).json({ message: "Failed to fetch from TMDB" });
