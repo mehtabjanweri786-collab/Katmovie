@@ -16,24 +16,17 @@ export async function registerRoutes(
     try {
       const page = parseInt(req.query.page as string) || 1;
       
-      // The user wants Hollywood Hindi Dubbed, Bollywood, and South Indian Hindi Dubbed.
-      // This is best achieved using discover/movie with region=IN and original_language=hi
-      // or looking for specific keywords/genres.
-      // To get 30 movies, we fetch from multiple TMDB pages and filter.
-      
-      const tmdbPagesPerSitePage = 4; // Fetch 4 TMDB pages (80 movies total) to find 30 Hindi ones
+      // Fetch Hollywood (en), South Indian (te, ta), and Bollywood (hi)
+      // and ensure they have Hindi (hi) translations/dubbing
+      const tmdbPagesPerSitePage = 6; 
       const startTmdbPage = (page - 1) * tmdbPagesPerSitePage + 1;
-      
       const tmdbPages = Array.from({ length: tmdbPagesPerSitePage }, (_, i) => startTmdbPage + i);
       
       const allResults = await Promise.all(
         tmdbPages.map(async (p) => {
-          // Using discover/movie with with_original_language=hi and region=IN
-          // This covers Bollywood and South Indian natively.
-          // For Hollywood Hindi Dubbed, we usually need to search specifically or check translations, 
-          // but TMDB "with_original_language=hi" is the most reliable filter for the requested content type here.
+          // Use discover with multiple original languages but filtered by Hindi availability
           const response = await fetch(
-            `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&language=hi-IN&region=IN&with_original_language=hi&sort_by=popularity.desc&page=${p}`
+            `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&language=hi-IN&with_original_language=en|hi|te|ta&with_languages=hi&sort_by=popularity.desc&page=${p}`
           );
           const data = await response.json();
           return data.results || [];
