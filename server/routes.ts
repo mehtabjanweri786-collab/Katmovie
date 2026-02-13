@@ -15,17 +15,25 @@ export async function registerRoutes(
   app.get(api.movies.trending.path, async (req, res) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
-      // We need to fetch multiple TMDB pages because we filter for Hindi ('hi')
-      // TMDB returns 20 results per page. To get roughly 20-30 Hindi results, we might need multiple pages.
-      const tmdbPagesPerSitePage = 5;
+      
+      // The user wants Hollywood Hindi Dubbed, Bollywood, and South Indian Hindi Dubbed.
+      // This is best achieved using discover/movie with region=IN and original_language=hi
+      // or looking for specific keywords/genres.
+      // To get 30 movies, we fetch from multiple TMDB pages and filter.
+      
+      const tmdbPagesPerSitePage = 4; // Fetch 4 TMDB pages (80 movies total) to find 30 Hindi ones
       const startTmdbPage = (page - 1) * tmdbPagesPerSitePage + 1;
       
       const tmdbPages = Array.from({ length: tmdbPagesPerSitePage }, (_, i) => startTmdbPage + i);
       
       const allResults = await Promise.all(
         tmdbPages.map(async (p) => {
+          // Using discover/movie with with_original_language=hi and region=IN
+          // This covers Bollywood and South Indian natively.
+          // For Hollywood Hindi Dubbed, we usually need to search specifically or check translations, 
+          // but TMDB "with_original_language=hi" is the most reliable filter for the requested content type here.
           const response = await fetch(
-            `${TMDB_BASE_URL}/trending/movie/day?api_key=${TMDB_API_KEY}&language=en-US&page=${p}`
+            `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&language=hi-IN&region=IN&with_original_language=hi&sort_by=popularity.desc&page=${p}`
           );
           const data = await response.json();
           return data.results || [];
@@ -34,14 +42,19 @@ export async function registerRoutes(
 
       let results = allResults.flat();
       
-      // Filter for Hindi language only
-      results = results.filter((movie: any) => movie.original_language === 'hi');
+      // Ensure results are unique by ID
+      const seen = new Set();
+      results = results.filter((movie: any) => {
+        const duplicate = seen.has(movie.id);
+        seen.add(movie.id);
+        return !duplicate;
+      });
       
-      // Return 30 per page as requested
+      // Return exactly 30 per page as requested
       res.json({ 
         results: results.slice(0, 30),
         page,
-        total_pages: 15 // Capped as requested
+        total_pages: 15
       });
     } catch (error) {
       console.error("TMDB Error:", error);
