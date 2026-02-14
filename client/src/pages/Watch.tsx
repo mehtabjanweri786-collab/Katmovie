@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function Watch() {
   const params = useParams<{ id: string }>();
-  const id = parseInt(params.id || "0");
+  const id = params.id ? parseInt(params.id) : 0;
   const { data: movie, isLoading, error } = useMovieDetail(id);
 
   if (isLoading) {
