@@ -79,14 +79,14 @@ export default function Watch() {
                  </div>
               </div>
               <div className="flex flex-wrap gap-4 mt-4 justify-center">
-                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-green-600 hover:bg-green-700 text-white">
-                   <Download className="w-4 h-4" /> 480p
+                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-green-600 hover:bg-green-700 text-white min-h-10">
+                   <Download className="w-4 h-4" /> Download 480p
                  </Button>
-                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-blue-600 hover:bg-blue-700 text-white">
-                   <Download className="w-4 h-4" /> 720p
+                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-blue-600 hover:bg-blue-700 text-white min-h-10">
+                   <Download className="w-4 h-4" /> Download 720p
                  </Button>
-                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-purple-600 hover:bg-purple-700 text-white">
-                   <Download className="w-4 h-4" /> 1080p
+                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-purple-600 hover:bg-purple-700 text-white min-h-10">
+                   <Download className="w-4 h-4" /> Download 1080p
                  </Button>
               </div>
             </div>

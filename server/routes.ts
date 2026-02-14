@@ -67,11 +67,8 @@ export async function registerRoutes(
       }
       const data = await response.json();
       
-      // Strict check for Hindi language
-      if (data.original_language !== 'hi') {
-        return res.status(404).json({ message: "Hindi dubbed version not available" });
-      }
-      
+      // We'll relax the strict check here to ensure the page at least loads, 
+      // but keep the filtering on the list views.
       res.json(data);
     } catch (error) {
       console.error("TMDB Error:", error);
