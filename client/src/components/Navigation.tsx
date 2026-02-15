@@ -96,14 +96,24 @@ export function Navigation() {
 
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="flex-1 max-w-md relative hidden md:block">
-          <Input
-            type="text"
-            placeholder="Search Hindi dubbed movies..."
-            className="w-full bg-white/5 border-white/10 rounded-full pl-10 focus:ring-primary/50"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <div className="relative group">
+            <Input
+              type="text"
+              placeholder="Search Hindi dubbed movies..."
+              className="w-full bg-white/5 border-white/10 rounded-full pl-10 pr-10 focus:ring-primary/50 transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Button 
+              type="submit" 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-white/10"
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+          </div>
         </form>
 
         {/* Search / Mobile Menu */}

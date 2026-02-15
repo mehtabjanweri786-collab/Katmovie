@@ -27,7 +27,7 @@ export default function Home() {
   const searchMoviesQuery = useSearchMovies(searchQuery);
 
   const isLoading = searchQuery ? searchMoviesQuery.isLoading : trendingQuery.isLoading;
-  const error = searchQuery ? searchMoviesQuery.error : trendingQuery.error;
+  const isError = searchQuery ? searchMoviesQuery.isError : trendingQuery.isError;
   const data = searchQuery ? searchMoviesQuery.data : trendingQuery.data;
 
   // Reset page when search query changes
@@ -41,6 +41,22 @@ export default function Home() {
         <Navigation />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navigation />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-4">
+          <div className="bg-destructive/10 p-4 rounded-full">
+            <SearchX className="w-12 h-12 text-destructive" />
+          </div>
+          <div className="text-destructive font-bold text-xl">Search failed</div>
+          <p className="text-muted-foreground max-w-xs">We encountered an error while searching for movies. Please try again later.</p>
+          <Button onClick={() => window.location.href = '/'} variant="outline">Back to Home</Button>
         </div>
       </div>
     );
