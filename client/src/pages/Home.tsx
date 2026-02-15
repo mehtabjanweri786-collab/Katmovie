@@ -64,7 +64,7 @@ export default function Home() {
 
   const movies = data?.results || [];
   const heroMovie = !searchQuery ? movies[0] : null; // Only show hero on trending
-  const totalPages = data?.total_pages || 1;
+  const totalPages = (data as any)?.total_pages || 1;
 
   const handlePageChange = (p: number) => {
     setPage(p);
