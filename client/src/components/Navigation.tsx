@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
 import { Clapperboard, Menu, Search, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
 const CATEGORIES = [
   { id: 28, name: "Action" },
@@ -21,18 +22,28 @@ const CATEGORIES = [
 ];
 
 export function Navigation() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setLocation(`/?s=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-xl">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="bg-primary/20 p-2 rounded-lg group-hover:bg-primary/30 transition-colors">
             <Clapperboard className="w-6 h-6 text-primary" />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight text-white">
+          <span className="font-display font-bold text-xl tracking-tight text-white hidden sm:inline-block">
             Kat<span className="text-primary">Movie</span>HD
           </span>
         </Link>
@@ -83,10 +94,27 @@ export function Navigation() {
           </Sheet>
         </nav>
 
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="flex-1 max-w-md relative hidden md:block">
+          <Input
+            type="text"
+            placeholder="Search Hindi dubbed movies..."
+            className="w-full bg-white/5 border-white/10 rounded-full pl-10 focus:ring-primary/50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        </form>
+
         {/* Search / Mobile Menu */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white rounded-full">
-            <Search className="w-5 h-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-muted-foreground hover:text-white rounded-full md:hidden"
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+          >
+            {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
           </Button>
           
           <div className="lg:hidden">
@@ -134,6 +162,23 @@ export function Navigation() {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Search Overlay */}
+      {isSearchOpen && (
+        <div className="md:hidden p-4 border-t border-white/5 bg-background">
+          <form onSubmit={handleSearch} className="relative">
+            <Input
+              autoFocus
+              type="text"
+              placeholder="Search movies..."
+              className="w-full bg-white/5 border-white/10 rounded-full pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          </form>
+        </div>
+      )}
     </header>
   );
 }

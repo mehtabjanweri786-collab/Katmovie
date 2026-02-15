@@ -42,6 +42,15 @@ export const api = {
           results: z.array(z.any())
         })
       }
+    },
+    search: {
+      method: 'GET' as const,
+      path: '/api/movies/search',
+      responses: {
+        200: z.object({
+          results: z.array(z.any())
+        })
+      }
     }
   }
 };

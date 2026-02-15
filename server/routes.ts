@@ -91,5 +91,26 @@ export async function registerRoutes(
     }
   });
 
+  // Proxy route for Search
+  app.get(api.movies.search.path, async (req, res) => {
+    const { query } = req.query;
+    if (!query) {
+      return res.json({ results: [] });
+    }
+    try {
+      const response = await fetch(
+        `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query as string)}&language=hi-IN&include_adult=false`
+      );
+      const data = await response.json();
+      
+      // Even for search, we prioritize Hindi content if available, 
+      // but TMDB search with language=hi-IN usually handles it.
+      res.json(data);
+    } catch (error) {
+      console.error("TMDB Error:", error);
+      res.status(500).json({ message: "Failed to search movies" });
+    }
+  });
+
   return httpServer;
 }

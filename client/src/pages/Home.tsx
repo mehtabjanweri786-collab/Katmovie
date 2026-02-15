@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { useTrendingMovies } from "@/hooks/use-movies";
+import { useState, useEffect } from "react";
+import { useTrendingMovies, useSearchMovies } from "@/hooks/use-movies";
 import { MovieCard } from "@/components/MovieCard";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
-import { Loader2, TrendingUp, ChevronRight } from "lucide-react";
+import { Loader2, TrendingUp, ChevronRight, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   Pagination,
   PaginationContent,
@@ -17,8 +17,23 @@ import {
 } from "@/components/ui/pagination";
 
 export default function Home() {
+  const [location] = useLocation();
+  const searchParams = new URLSearchParams(window.location.search);
+  const searchQuery = searchParams.get('s') || "";
+  
   const [page, setPage] = useState(1);
-  const { data, isLoading, error } = useTrendingMovies(page);
+  
+  const trendingQuery = useTrendingMovies(page);
+  const searchMoviesQuery = useSearchMovies(searchQuery);
+
+  const isLoading = searchQuery ? searchMoviesQuery.isLoading : trendingQuery.isLoading;
+  const error = searchQuery ? searchMoviesQuery.error : trendingQuery.error;
+  const data = searchQuery ? searchMoviesQuery.data : trendingQuery.data;
+
+  // Reset page when search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
 
   if (isLoading) {
     return (
@@ -31,21 +46,8 @@ export default function Home() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <Navigation />
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-4">
-          <div className="text-destructive font-bold text-xl">Oops! Something went wrong.</div>
-          <p className="text-muted-foreground">We couldn't load the trending movies.</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
-        </div>
-      </div>
-    );
-  }
-
   const movies = data?.results || [];
-  const heroMovie = movies[0]; // Simple hero logic using first trending movie
+  const heroMovie = !searchQuery ? movies[0] : null; // Only show hero on trending
   const totalPages = data?.total_pages || 1;
 
   const handlePageChange = (p: number) => {
@@ -58,7 +60,7 @@ export default function Home() {
       <Navigation />
       
       <main>
-        {/* Hero Section */}
+        {/* Hero Section - Hidden on Search */}
         {heroMovie && (
           <section className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
             <div className="absolute inset-0">
@@ -100,66 +102,88 @@ export default function Home() {
 
         <AdPlaceholder />
 
-        {/* Trending Grid */}
+        {/* Movie Grid */}
         <section className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-between mb-8">
             <div className="space-y-1">
               <h2 className="text-2xl md:text-3xl font-display font-bold text-white flex items-center gap-2">
-                Trending Now <div className="h-1 w-1 bg-primary rounded-full" />
+                {searchQuery ? `Search Results: ${searchQuery}` : "Trending Now"} 
+                {!searchQuery && <div className="h-1 w-1 bg-primary rounded-full" />}
               </h2>
-              <p className="text-sm text-muted-foreground">The most popular movies being watched right now</p>
+              <p className="text-sm text-muted-foreground">
+                {searchQuery ? `Found ${movies.length} movies for your search` : "The most popular movies being watched right now"}
+              </p>
             </div>
-            <Button variant="ghost" className="gap-2 text-primary hover:text-primary/80 hidden sm:flex">
-              View All <ChevronRight className="w-4 h-4" />
-            </Button>
+            {!searchQuery && (
+              <Button variant="ghost" className="gap-2 text-primary hover:text-primary/80 hidden sm:flex">
+                View All <ChevronRight className="w-4 h-4" />
+              </Button>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-x-6 gap-y-10">
-            {movies.map((movie: any) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id}
-                title={movie.title}
-                posterPath={movie.poster_path}
-                voteAverage={movie.vote_average}
-                releaseDate={movie.release_date}
-                isHindi={movie.original_language === 'hi' || movie.title.toLowerCase().includes('hindi')}
-              />
-            ))}
-          </div>
-
-          {/* Pagination Controls */}
-          <div className="mt-16 flex justify-center">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => page > 1 && handlePageChange(page - 1)}
-                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+          {movies.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-x-6 gap-y-10">
+                {movies.map((movie: any) => (
+                  <MovieCard
+                    key={movie.id}
+                    id={movie.id}
+                    title={movie.title}
+                    posterPath={movie.poster_path}
+                    voteAverage={movie.vote_average}
+                    releaseDate={movie.release_date}
+                    isHindi={movie.original_language === 'hi' || movie.title.toLowerCase().includes('hindi')}
                   />
-                </PaginationItem>
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <PaginationItem key={p} className="hidden sm:inline-block">
-                    <PaginationLink 
-                      onClick={() => handlePageChange(p)}
-                      isActive={page === p}
-                      className="cursor-pointer"
-                    >
-                      {p}
-                    </PaginationLink>
-                  </PaginationItem>
                 ))}
+              </div>
 
-                <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => page < totalPages && handlePageChange(page + 1)}
-                    className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+              {/* Pagination - Only on Trending */}
+              {!searchQuery && (
+                <div className="mt-16 flex justify-center">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => page > 1 && handlePageChange(page - 1)}
+                          className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: Math.min(totalPages, 15) }, (_, i) => i + 1).map((p) => (
+                        <PaginationItem key={p} className="hidden sm:inline-block">
+                          <PaginationLink 
+                            onClick={() => handlePageChange(p)}
+                            isActive={page === p}
+                            className="cursor-pointer"
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => page < totalPages && handlePageChange(page + 1)}
+                          className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="py-20 text-center space-y-4">
+              <div className="bg-white/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <SearchX className="w-10 h-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-2xl font-display font-bold text-white">No movies found</h3>
+              <p className="text-muted-foreground">No movies found for "{searchQuery}". Try another name.</p>
+              <Button variant="outline" className="rounded-full mt-4" onClick={() => window.location.href = '/'}>
+                Clear Search
+              </Button>
+            </div>
+          )}
         </section>
       </main>
 

@@ -37,3 +37,15 @@ export function useMoviesByCategory(genreId: number) {
     },
   });
 }
+
+export function useSearchMovies(query: string) {
+  return useQuery({
+    queryKey: [api.movies.search.path, query],
+    queryFn: async () => {
+      const res = await fetch(`${api.movies.search.path}?query=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error("Failed to search movies");
+      return api.movies.search.responses[200].parse(await res.json());
+    },
+    enabled: !!query,
+  });
+}
