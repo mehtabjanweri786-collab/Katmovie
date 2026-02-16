@@ -79,13 +79,22 @@ export default function Watch() {
                  </div>
               </div>
               <div className="flex flex-wrap gap-4 mt-4 justify-center">
-                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-green-600 hover:bg-green-700 text-white min-h-10">
+                 <Button 
+                   onClick={() => window.open(`https://www.google.com/search?q=download+${encodeURIComponent(movie.title)}+480p`, '_blank')}
+                   className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-green-600 hover:bg-green-700 text-white min-h-10"
+                 >
                    <Download className="w-4 h-4" /> Download 480p
                  </Button>
-                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-blue-600 hover:bg-blue-700 text-white min-h-10">
+                 <Button 
+                   onClick={() => window.open(`https://www.google.com/search?q=download+${encodeURIComponent(movie.title)}+720p`, '_blank')}
+                   className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-blue-600 hover:bg-blue-700 text-white min-h-10"
+                 >
                    <Download className="w-4 h-4" /> Download 720p
                  </Button>
-                 <Button className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-purple-600 hover:bg-purple-700 text-white min-h-10">
+                 <Button 
+                   onClick={() => window.open(`https://www.google.com/search?q=download+${encodeURIComponent(movie.title)}+1080p`, '_blank')}
+                   className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-purple-600 hover:bg-purple-700 text-white min-h-10"
+                 >
                    <Download className="w-4 h-4" /> Download 1080p
                  </Button>
               </div>
