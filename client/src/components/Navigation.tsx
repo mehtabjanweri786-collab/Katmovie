@@ -30,9 +30,13 @@ export function Navigation() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      console.log('Search triggered for:', searchQuery.trim());
-      setLocation(`/?s=${encodeURIComponent(searchQuery.trim())}`);
-      setIsSearchOpen(false);
+      try {
+        console.log('Search triggered for:', searchQuery.trim());
+        setLocation(`/?s=${encodeURIComponent(searchQuery.trim())}`);
+        setIsSearchOpen(false);
+      } catch (error) {
+        console.error('Navigation Error:', error);
+      }
     }
   };
 
