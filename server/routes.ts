@@ -98,8 +98,11 @@ export async function registerRoutes(
       return res.json({ results: [] });
     }
     try {
+      const apiKey = '6d640c61bfb461f89f6600f4d337a17c';
+      const url = 'https://api.themoviedb.org/3/search/movie?api_key=' + apiKey + '&query=' + encodeURIComponent(query as string) + '&language=hi-IN&include_adult=false';
+      console.log('Fetching from:', url);
       console.log('TMDB Search Request for:', query);
-      const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query as string)}&language=hi-IN&include_adult=false`;
+      
       const response = await fetch(url);
       
       if (!response.ok) {

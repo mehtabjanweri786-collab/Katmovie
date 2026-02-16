@@ -31,6 +31,9 @@ export function Navigation() {
     e.preventDefault();
     if (searchQuery.trim()) {
       try {
+        const apiKey = '6d640c61bfb461f89f6600f4d337a17c';
+        const url = 'https://api.themoviedb.org/3/search/movie?api_key=' + apiKey + '&query=' + encodeURIComponent(searchQuery.trim());
+        console.log('Fetching from:', url);
         console.log('Search triggered for:', searchQuery.trim());
         setLocation(`/?s=${encodeURIComponent(searchQuery.trim())}`);
         setIsSearchOpen(false);
