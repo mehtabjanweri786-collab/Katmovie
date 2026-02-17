@@ -138,69 +138,71 @@ export default function Home() {
             )}
           </div>
 
-          {movies.length > 0 ? (
-            <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-x-6 gap-y-10">
-                {movies.map((movie: any) => (
-                  <MovieCard
-                    key={movie.id}
-                    id={movie.id}
-                    title={movie.title}
-                    posterPath={movie.poster_path}
-                    voteAverage={movie.vote_average}
-                    releaseDate={movie.release_date}
-                    isHindi={movie.original_language === 'hi' || movie.title.toLowerCase().includes('hindi')}
-                  />
-                ))}
-              </div>
-
-              {/* Pagination - Only on Trending */}
-              {!searchQuery && (
-                <div className="mt-16 flex justify-center">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          onClick={() => page > 1 && handlePageChange(page - 1)}
-                          className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      
-                      {Array.from({ length: Math.min(totalPages, 15) }, (_, i) => i + 1).map((p) => (
-                        <PaginationItem key={p} className="hidden sm:inline-block">
-                          <PaginationLink 
-                            onClick={() => handlePageChange(p)}
-                            isActive={page === p}
-                            className="cursor-pointer"
-                          >
-                            {p}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-
-                      <PaginationItem>
-                        <PaginationNext 
-                          onClick={() => page < totalPages && handlePageChange(page + 1)}
-                          className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+          <div id="movie-grid">
+            {movies.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-x-6 gap-y-10">
+                  {movies.map((movie: any) => (
+                    <MovieCard
+                      key={movie.id}
+                      id={movie.id}
+                      title={movie.title}
+                      posterPath={movie.poster_path}
+                      voteAverage={movie.vote_average}
+                      releaseDate={movie.release_date}
+                      isHindi={movie.original_language === 'hi' || movie.title.toLowerCase().includes('hindi')}
+                    />
+                  ))}
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="py-20 text-center space-y-4">
-              <div className="bg-white/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <SearchX className="w-10 h-10 text-muted-foreground" />
+
+                {/* Pagination - Only on Trending */}
+                {!searchQuery && (
+                  <div className="mt-16 flex justify-center">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => page > 1 && handlePageChange(page - 1)}
+                            className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        
+                        {Array.from({ length: Math.min(totalPages, 15) }, (_, i) => i + 1).map((p) => (
+                          <PaginationItem key={p} className="hidden sm:inline-block">
+                            <PaginationLink 
+                              onClick={() => handlePageChange(p)}
+                              isActive={page === p}
+                              className="cursor-pointer"
+                            >
+                              {p}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => page < totalPages && handlePageChange(page + 1)}
+                            className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="py-20 text-center space-y-4">
+                <div className="bg-white/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <SearchX className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-white">No movies found</h3>
+                <p className="text-muted-foreground">No movies found for "{searchQuery}". Try another name.</p>
+                <Button variant="outline" className="rounded-full mt-4" onClick={() => window.location.href = '/'}>
+                  Clear Search
+                </Button>
               </div>
-              <h3 className="text-2xl font-display font-bold text-white">No movies found</h3>
-              <p className="text-muted-foreground">No movies found for "{searchQuery}". Try another name.</p>
-              <Button variant="outline" className="rounded-full mt-4" onClick={() => window.location.href = '/'}>
-                Clear Search
-              </Button>
-            </div>
-          )}
+            )}
+          </div>
         </section>
       </main>
 

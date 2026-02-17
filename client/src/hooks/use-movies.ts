@@ -40,11 +40,21 @@ export function useMoviesByCategory(genreId: number) {
 
 export function useSearchMovies(query: string) {
   return useQuery({
-    queryKey: [api.movies.search.path, query],
+    queryKey: ['tmdb-search', query],
     queryFn: async () => {
-      const res = await fetch(`${api.movies.search.path}?query=${encodeURIComponent(query)}`);
-      if (!res.ok) throw new Error("Failed to search movies");
-      return api.movies.search.responses[200].parse(await res.json());
+      const apiKey = '6d640c61bfb461f89f6600f4d337a17c';
+      const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=en-US`;
+      
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Search Error:', error);
+        alert('Search is not working properly. Check Console.');
+        throw error;
+      }
     },
     enabled: !!query,
   });
