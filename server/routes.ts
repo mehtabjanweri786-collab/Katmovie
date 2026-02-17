@@ -108,14 +108,16 @@ export async function registerRoutes(
       if (!response.ok) {
         const errorText = await response.text();
         console.error('TMDB Search Error Response:', errorText);
-        return res.status(response.status).json({ message: "TMDB API Error", details: errorText });
+        // If API returns error, we'll return empty results to trigger "No movies found" instead of "Search failed"
+        return res.json({ results: [], total_pages: 0 });
       }
 
       const data = await response.json();
       res.json(data);
     } catch (error) {
       console.error("Technical Search Error:", error);
-      res.status(500).json({ message: "Failed to search movies", error: String(error) });
+      // Return empty results on technical error too for a smoother fallback
+      res.json({ results: [], total_pages: 0 });
     }
   });
 
