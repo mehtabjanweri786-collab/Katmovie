@@ -44,7 +44,9 @@ export default function Watch() {
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : "https://via.placeholder.com/500x750?text=No+Poster";
 
-  const adsterraLink = 'https://www.highrevenuegate.com/example';
+  const handleDownloadClick = () => {
+    alert('Direct Download Links are being updated. Please check back in 24 hours.');
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-body">
@@ -82,19 +84,19 @@ export default function Watch() {
               </div>
               <div className="flex flex-wrap gap-4 mt-4 justify-center">
                  <Button 
-                   onClick={() => window.open(adsterraLink, '_blank')}
+                   onClick={handleDownloadClick}
                    className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-green-600 hover:bg-green-700 text-white min-h-10"
                  >
                    <Download className="w-4 h-4" /> Download 480p
                  </Button>
                  <Button 
-                   onClick={() => window.open(adsterraLink, '_blank')}
+                   onClick={handleDownloadClick}
                    className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-blue-600 hover:bg-blue-700 text-white min-h-10"
                  >
                    <Download className="w-4 h-4" /> Download 720p
                  </Button>
                  <Button 
-                   onClick={() => window.open(adsterraLink, '_blank')}
+                   onClick={handleDownloadClick}
                    className="flex-1 gap-2 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-purple-600 hover:bg-purple-700 text-white min-h-10"
                  >
                    <Download className="w-4 h-4" /> Download 1080p
