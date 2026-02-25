@@ -37,6 +37,11 @@ Preferred communication style: Simple, everyday language.
   - `GET /api/movies/trending` — Fetches trending movies, filters to Hindi language only, returns up to 30
   - `GET /api/movies/:id` — Fetches individual movie details from TMDB
   - `GET /api/movies/category/:genreId` — Fetches movies by genre from TMDB
+- **Streaming Servers**:
+  - Server 1: vidsrc.to
+  - Server 2: 2embed.cc
+  - Server 3: multiembed.mov
+  - Server 4: vidsrc.me
 - **Dev mode**: Vite dev server middleware is attached to Express for HMR
 - **Production**: Client is built to `dist/public`, server is bundled with esbuild to `dist/index.cjs`
 

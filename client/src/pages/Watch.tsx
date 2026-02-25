@@ -1,16 +1,20 @@
 import { useParams } from "wouter";
+import { useState } from "react";
 import { useMovieDetail } from "@/hooks/use-movies";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
-import { Loader2, Play, Download, Share2, Heart, Calendar, Clock, Star, Globe } from "lucide-react";
+import { Loader2, Play, Download, Share2, Heart, Calendar, Clock, Star, Globe, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export default function Watch() {
   const params = useParams<{ id: string }>();
   const id = params.id ? parseInt(params.id) : 0;
   const { data: movie, isLoading, error } = useMovieDetail(id);
+
+  const [activeServer, setActiveServer] = useState(1);
 
   if (isLoading) {
     return (
@@ -35,6 +39,13 @@ export default function Watch() {
       </div>
     );
   }
+
+  const servers = [
+    { id: 1, name: "Server 1", url: `https://vidsrc.to/embed/movie/${movie.id}` },
+    { id: 2, name: "Server 2", url: `https://www.2embed.cc/embed/${movie.id}` },
+    { id: 3, name: "Server 3", url: `https://multiembed.mov/directstream.php?video_id=${movie.id}&tmdb=1` },
+    { id: 4, name: "Server 4", url: `https://player.vidsrc.me/embed/movie/${movie.id}` },
+  ];
 
   const backdropUrl = movie.backdrop_path 
     ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
@@ -145,15 +156,33 @@ export default function Watch() {
 
               {/* Player Section */}
               <div className="mt-12 space-y-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-2xl font-display font-bold text-white">Stream Now</h3>
-                  <Badge className="bg-primary text-white hover:bg-primary/90">Server 1</Badge>
-                  <Badge variant="outline" className="text-muted-foreground hover:text-white cursor-pointer">Server 2</Badge>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="text-2xl font-display font-bold text-white mr-2">Stream Now</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {servers.map((server) => (
+                      <Button
+                        key={server.id}
+                        variant={activeServer === server.id ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setActiveServer(server.id)}
+                        className={cn(
+                          "gap-2 transition-all duration-300",
+                          activeServer === server.id 
+                            ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                            : "text-muted-foreground hover:text-white border-white/10 hover:bg-white/5"
+                        )}
+                      >
+                        <Monitor className="w-4 h-4" />
+                        {server.name}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
                 
                 <div className="w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 relative shadow-2xl flex items-center justify-center group">
                   <iframe
-                    src={`https://embed.smashystream.com/playere.php?tmdb=${movie.id}`}
+                    key={activeServer}
+                    src={servers.find(s => s.id === activeServer)?.url}
                     className="absolute inset-0 w-full h-full"
                     allowFullScreen
                     frameBorder="0"
@@ -163,7 +192,7 @@ export default function Watch() {
                 
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 text-sm text-yellow-500/80 flex items-start gap-3">
                    <div className="mt-0.5">⚠️</div>
-                   <p>If the video doesn't play, please try switching servers or disable your adblocker. This is a demo player placeholder.</p>
+                   <p>If the video doesn't play, please try switching servers or disable your adblocker. Some servers might contain ads from third-party sources.</p>
                 </div>
               </div>
             </div>
